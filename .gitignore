@@ -1,0 +1,39 @@
+# Temporary files
+*~
+*.swp
+
+# Object files
+*.o
+*.ko
+
+# Libraries
+*.lib
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.elf
+
+# Object and build folders
+.dep
+build
+
+# gdbinit files
+.gdbinit
+.auth
+connexion.pyc
+
+# Twitter library
+client/twitter
+
+# Python byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]

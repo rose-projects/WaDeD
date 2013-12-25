@@ -1,0 +1,90 @@
+How to use a WaDeD
+==================
+
+### Needed programs
+
+* ChibiOS
+This program use the real time operating system ChibiOS.
+Clone the ChibiOS repository : git clone git@github.com:ChibiOS/ChibiOS-RT.git
+In order to compil the applications specify the location of ChibiOS repository
+in the Makefiles.
+
+* Arm none eabi toolchain
+Visit https://launchpad.net/gcc-arm-embedded to install the toolchain on your
+computer
+
+# USB interface
+
+The WaDeD communicates with a USB host with a serial over USB protocol.
+When connected to a host we experienced that the host sends some unwanted data
+at the beggining of the connection, so to prevent the WaDeD to execute unwanted
+commands it must receive a special sequence of information from the connection
+before starting to use it. Once the sequence is sent, the WaDeD will accept
+commands from the usb and also send data to the host.
+
+The sequence are 3 consecultives ping commands.
+
+In linux computers, the WaDeD will apear as /dev/ttyACM%
+
+To communicate through USB, you can use minicom, or the python client in the
+client directory. But it experiences some problems with the serial connexion,
+maybe only on Ubuntu.
+
+# USB commands
+
+The WaDeD interface is a very simple one, all information sent or received by
+the usb are composed by human readable characters, so you do not need any
+special sofware to communicate with the WaDeD.
+
+User commands:
+Messages the user can send to a WaDeD
+
+ping
+    Command with no parameters that is responded with an act
+    When connexion with a host start, the WaDeD will wait for tree
+    consecutive ping commands to start the communication.
+
+set_id x
+    x is a number that represents the address that the user will have in the
+    WaDeD network. Returns an ack and all the messages that are addressed to
+    that id in the WaDeD
+
+set_date aaaa mo dd hh mi ss
+    Used to the waded so it can create its timestamp.
+    aaaa = year
+    mo = month
+    dd = day
+    hh = hour
+    mi = minute
+    ss = second
+    returns an ack
+
+get_id
+    Command with no parameters, returns the id of the user.
+
+send_txt x string
+    Add a message to be shared in the WaDeD network.
+    x is the address of the message destination.
+    string is the message.
+
+WaDeD user messages:
+Messages the WaDeD send to the user
+
+ack
+    Response to good commands
+
+nack string
+    Response to bad commands, string contains the possible error.
+
+rec_txt x string
+    Used to give the user a message. x is the source address and string is the
+    message.
+
+my_id x
+    x is the current WaDeD address.
+
+# Twitter
+
+We have a twitter client, still in beta. So to use it you will have first to
+set the id of the WaDeD, and then lauch the twidded script in client folder.
+Messages addressed to this id will be tweeted by WaDeD.
