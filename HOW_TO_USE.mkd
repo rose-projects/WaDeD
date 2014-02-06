@@ -13,6 +13,9 @@ in the Makefiles.
 Visit https://launchpad.net/gcc-arm-embedded to install the toolchain on your
 computer
 
+* python3
+For the USB interface
+
 # USB interface
 
 The WaDeD communicates with a USB host with a serial over USB protocol.
@@ -30,8 +33,10 @@ To communicate through USB, you can use minicom, or the python client in the
 client directory. But it experiences some problems with the serial connexion,
 maybe only on Ubuntu.
 
-# USB commands
+To launch the USB interface, launch the python program **client.py** with
+python3 as root user.
 
+# USB commands
 The WaDeD interface is a very simple one, all information sent or received by
 the usb are composed by human readable characters, so you do not need any
 special sofware to communicate with the WaDeD.
