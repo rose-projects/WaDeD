@@ -37,7 +37,8 @@ static const PWMConfig pwmcfg2 = {
         {PWM_OUTPUT_ACTIVE_HIGH, NULL}, // Led.
         {PWM_OUTPUT_DISABLED, NULL},    // Nothing.
     },
-    0
+    0,
+    0,
 };
 
 static WORKING_AREA(waLED_Thread1, 256); /**< The LED thread working area. */

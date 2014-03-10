@@ -48,7 +48,7 @@ static void do_node(uint8_t n, uint8_t diff)
 #endif // __SMALL_TREE__
     uint8_t node = n & ~(1 << 7); // The node number in the tree.
 
-    if(node < 9) // The node's sons are nodes.
+    if(node < 9) { // The node's sons are nodes.
         for(int i = 0; i < 8; i++) {
             if(diff & (1 << i)) {
                 uint8_t p = 8 * node + i + 1; // The son number in the tree.
@@ -59,7 +59,7 @@ static void do_node(uint8_t n, uint8_t diff)
 #endif
             }
         }
-    else // The node's sons are leaves.
+    } else { // The node's sons are leaves.
         for(int i = 0; i < 8; i++) {
             if(diff & (1 << i)) {
                 uint16_t p = 8 * node + i + 1; // The son number in the tree.
@@ -71,6 +71,7 @@ static void do_node(uint8_t n, uint8_t diff)
 #endif
             }
         }
+    }
 }
 
 /**
@@ -197,17 +198,18 @@ void handle_packet(const void *buf)
         uint8_t length  = ((uint8_t *) buf)[1];
 
         switch(type) {
-            case(NODE):
+            case NODE:
                 handle_node(((uint8_t *) buf) + 2);
                 break;
-            case(ROOT):
+            case ROOT:
                 handle_root(((uint8_t *) buf) + 2);
                 break;
-            case(LEAF):
+            case LEAF:
                 handle_list(((uint8_t *) buf) + 2);
                 break;
-            case(MESSAGE):
+            case MESSAGE:
                 handle_message(((uint8_t *) buf) + 2, length);
+            default:
                 break;
         }
 #ifndef __TAG_MODE__

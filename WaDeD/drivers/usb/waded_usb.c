@@ -23,16 +23,28 @@
  */
 #include "waded_usb.h"
 
+#include <stdio.h>
+#include <string.h>
+#include "ch.h"
+
 /*===========================================================================*/
 /* USB related stuff.                                                        */
 /*===========================================================================*/
 
 #define USB_BUF 256
 
+/*
+ * Endpoints to be used for USBD1.
+ */
+#define USBD1_DATA_REQUEST_EP           1
+#define USBD1_DATA_AVAILABLE_EP         1
+#define USBD1_INTERRUPT_REQUEST_EP      2
 // Serial over USB Driver structure.
 SerialUSBDriver SDU1;
 
-// USB Device Descriptor.
+/*
+ * USB Device Descriptor.
+ */
 static const uint8_t vcom_device_descriptor_data[18] = {
     USB_DESC_DEVICE (0x0110,        // bcdUSB (1.1).
                      0x02,          // bDeviceClass (CDC).
@@ -48,7 +60,9 @@ static const uint8_t vcom_device_descriptor_data[18] = {
                      1)             // bNumConfigurations.
 };
 
-// Device Descriptor wrapper.
+/*
+ * Device Descriptor wrapper.
+ */
 static const USBDescriptor vcom_device_descriptor = {
     sizeof vcom_device_descriptor_data,
     vcom_device_descriptor_data
@@ -87,8 +101,9 @@ static const uint8_t vcom_configuration_descriptor_data[67] = {
     // Call Management Functional Descriptor.
     USB_DESC_BYTE         (5),            // bFunctionLength.
     USB_DESC_BYTE         (0x24),         // bDescriptorType (CS_INTERFACE).
-    USB_DESC_BYTE         (0x01),         /* bDescriptorSubtype (Call Management
-                                             Functional Descriptor).*/
+    USB_DESC_BYTE         (0x01),         /* bDescriptorSubtype (Call
+                                             Management Functional
+                                             Descriptor).*/
     USB_DESC_BYTE         (0x00),         // bmCapabilities (D0+D1).
     USB_DESC_BYTE         (0x01),         // bDataInterface.
 
@@ -106,10 +121,11 @@ static const uint8_t vcom_configuration_descriptor_data[67] = {
                                              Functional Descriptor).*/
     USB_DESC_BYTE         (0x00),         /* bMasterInterface (Communication
                                              Class Interface).*/
-    USB_DESC_BYTE         (0x01),         // bSlaveInterface0 (Data Class Interface).
+    USB_DESC_BYTE         (0x01),         /* bSlaveInterface0 (Data Class
+                                             Interface). */
 
     // Endpoint 2 Descriptor.
-    USB_DESC_ENDPOINT     (USB_CDC_INTERRUPT_REQUEST_EP|0x80,
+    USB_DESC_ENDPOINT     (USBD1_INTERRUPT_REQUEST_EP|0x80,
                            0x03,          // bmAttributes (Interrupt).
                            0x0008,        // wMaxPacketSize.
                            0xFF),         // bInterval.
@@ -127,13 +143,13 @@ static const uint8_t vcom_configuration_descriptor_data[67] = {
                            0x00),         // iInterface.
 
     // Endpoint 3 Descriptor.
-    USB_DESC_ENDPOINT     (USB_CDC_DATA_AVAILABLE_EP,     // bEndpointAddress.
+    USB_DESC_ENDPOINT     (USBD1_DATA_AVAILABLE_EP,     // bEndpointAddress.
                            0x02,          // bmAttributes (Bulk).
                            0x0040,        // wMaxPacketSize.
                            0x00),         // bInterval.
 
     // Endpoint 1 Descriptor.
-    USB_DESC_ENDPOINT     (USB_CDC_DATA_REQUEST_EP|0x80,  // bEndpointAddress.
+    USB_DESC_ENDPOINT     (USBD1_DATA_REQUEST_EP|0x80,  // bEndpointAddress.
                            0x02,          // bmAttributes (Bulk).
                            0x0040,        // wMaxPacketSize.
                            0x00)          // bInterval.
@@ -192,10 +208,11 @@ static const USBDescriptor vcom_strings[] = {
  * handled here.
  */
 static const USBDescriptor *get_descriptor(
-        __attribute__((unused)) USBDriver *usbp,
-        uint8_t dtype,
-        uint8_t dindex,
-        __attribute__((unused)) uint16_t lang) {
+                                    __attribute__((unused)) USBDriver *usbp,
+                                    uint8_t dtype,
+                                    uint8_t dindex,
+                                    __attribute__((unused)) uint16_t lang)
+{
 
     switch (dtype) {
         case USB_DESCRIPTOR_DEVICE:
@@ -246,12 +263,6 @@ static const USBEndpointConfig ep2config = {
     NULL
 };
 
-
-// Serial over USB driver configuration.
-static const SerialUSBConfig serusbcfg = {
-    &USBD1
-};
-
 // Handles the USB driver global events.
 static void usb_event(USBDriver *usbp, usbevent_t event)
 {
@@ -269,11 +280,11 @@ static void usb_event(USBDriver *usbp, usbevent_t event)
              * Note, this callback is invoked from an ISR so I-Class functions
              * must be used.
              */
-            usbInitEndpointI(usbp, USB_CDC_DATA_REQUEST_EP, &ep1config);
-            usbInitEndpointI(usbp, USB_CDC_INTERRUPT_REQUEST_EP, &ep2config);
+            usbInitEndpointI(usbp, USBD1_DATA_REQUEST_EP, &ep1config);
+            usbInitEndpointI(usbp, USBD1_INTERRUPT_REQUEST_EP, &ep2config);
 
             // Resetting the state of the CDC subsystem.
-            sduConfigureHookI(usbp);
+            sduConfigureHookI(&SDU1);
 
             chSysUnlockFromIsr();
             return;
@@ -294,6 +305,15 @@ static const USBConfig usbcfg = {
     sduRequestsHook,
     NULL
 };
+
+// Serial over USB driver configuration.
+static const SerialUSBConfig serusbcfg = {
+    &USBD1,
+    USBD1_DATA_REQUEST_EP,
+    USBD1_DATA_AVAILABLE_EP,
+    USBD1_INTERRUPT_REQUEST_EP
+};
+
 
 void usb_puts(const char * buffer)
 {

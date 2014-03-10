@@ -75,11 +75,11 @@ endif
 PROJECT = WaDeD
 
 # Paths
-ROOT = ../..
-CHIBIOS = # TODO Put here the location of the ChibiOS main folder
-BOARD = $(ROOT)/board
+ROOT    = ../..
+CHIBIOS = # TODO Specify here The location of the main folder of ChiBiOS
+BOARD   = $(ROOT)/board
 DRIVERS = $(ROOT)/drivers
-CONF = conf
+CONF    = conf
 C_FILES = $(ROOT)/src
 H_FILES = $(ROOT)/include
 
@@ -103,7 +103,7 @@ CSRC = $(PORTSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
-			 $(DRIVERSSRC) \
+       $(DRIVERSSRC) \
        $(CHIBIOS)/os/various/evtimer.c \
        $(CHIBIOS)/os/various/syscalls.c \
        $(CHIBIOS)/os/various/chprintf.c \

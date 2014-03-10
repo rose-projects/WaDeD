@@ -25,18 +25,9 @@
 #ifndef __USB_H__
 #define __USB_H__
 
-#include <stdio.h>
-#include <string.h>
-
-#include "ch.h"
 #include "hal.h"
-#include "test.h"
-
-#include "usb_cdc.h"
-#include "shell.h"
 #include "chprintf.h"
 
-#include "fram.h"
 
 /**
  * @brief Print a string on the USB.
